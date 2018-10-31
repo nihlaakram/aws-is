@@ -751,8 +751,8 @@ Resources:
               - ':server-certificate'
               - /
               - !Ref CertificateName
-        - LoadBalancerPort: '443'
-          InstancePort: '443'
+        - LoadBalancerPort: '9443'
+          InstancePort: '9443'
           Protocol: HTTPS
           InstanceProtocol: HTTPS
           PolicyNames:
@@ -786,7 +786,7 @@ Resources:
     DependsOn:
       - WSO2ISLoadBalancerSecurityGroup
 Outputs:
-  ISCarbonURL:
+  MgtConsoleUrl:
     Value: !Join
       - ''
       - - 'https://'
@@ -795,7 +795,7 @@ Outputs:
           - DNSName
         - '/carbon'
     Description: Identity Server Management Console URL
-  ISServerURL:
+  CarbonServerUrl:
     Value: !Join
       - ''
       - - 'https://'
@@ -804,6 +804,24 @@ Outputs:
           - DNSName
         - '/services'
     Description: Carbon Server URL
+  ISHttpUrl:
+    Value: !Join
+      - ''
+      - - ''
+        - !GetAtt
+          - WSO2ISLoadBalancer
+          - DNSName
+        - ':80'
+    Description: IS HTTP Gateway endpoint
+  ISHttpsUrl:
+    Value: !Join
+      - ''
+      - - ''
+        - !GetAtt
+          - WSO2ISLoadBalancer
+          - DNSName
+        - ':443'
+    Description: IS HTTPS Gateway endpoint
 Parameters:
   AWSAccessKeyId:
     Type: String
@@ -844,12 +862,12 @@ Parameters:
     AllowedPattern: '[A-Za-z0-9\-]+'
   DBEngine:
     Type: String
-    Default: MySQL_5.6
-    AllowedValues:
-      - MySQL_5.7
-      - MySQL_5.6
-      - Oracle
-      - MSSQL
+    Default: MySQL_5.7
+    # AllowedValues:
+    #   - MySQL_5.7
+    #   - MySQL_5.6
+    #   - Oracle
+    #   - MSSQL
   DBPassword:
     Type: String
     MinLength: 8
