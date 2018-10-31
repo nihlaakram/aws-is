@@ -498,14 +498,14 @@ Resources:
             - puppet agent -vt
             - 'if [ ! -d "/mnt/efs/server" ]; then'
             - '    mkdir -p /mnt/efs/server'
-            - '    cp -r /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/wso2is-5.7.0/repository/deployment/server /mnt/efs'
+            - '    cp -r /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/repository/deployment/server /mnt/efs'
             - fi
             - >-
               rm -rf
-              /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/wso2is-5.7.0/repository/deployment/server
+              /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/repository/deployment/server
             - >-
               ln -s /mnt/efs/server
-              /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/wso2is-5.7.0/repository/deployment/server
+              /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/repository/deployment/server
             - 'if [ ! -d "/mnt/efs/tenants" ]; then'
             - '    mkdir -p /mnt/efs/tenants'
             - '    cp -r /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/repository/tenants /mnt/efs'
