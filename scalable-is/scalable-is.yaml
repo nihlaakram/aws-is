@@ -794,6 +794,15 @@ Outputs:
           - DNSName
         - '/carbon'
     Description: Identity Server Management Console URL
+  ISServerURL:
+    Value: !Join
+      - ''
+      - - 'https://'
+        - !GetAtt
+          - WSO2ISLoadBalancer
+          - DNSName
+          - '/service'
+    Description: Carbon Server URL
 Parameters:
   AWSAccessKeyId:
     Type: String
