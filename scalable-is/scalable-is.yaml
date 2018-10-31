@@ -203,7 +203,7 @@ Resources:
       Engine: MySQL
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
-      MultiAZ: 'true'
+      MultiAZ: 'false'
       StorageType: gp2
       DBSubnetGroupName: !Ref WSO2ISDBSubnetGroup
   WSO2ISDBSubnetGroup:
