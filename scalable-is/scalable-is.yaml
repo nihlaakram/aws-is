@@ -34,6 +34,7 @@ Metadata:
         Parameters:
           - DBUsername
           - DBPassword
+          - DBEngine
       - Label:
           default: WUM Credentials
         Parameters:
@@ -60,6 +61,12 @@ Metadata:
         default: Password
       WSO2InstanceType:
         default: Instance Type
+      DBEngine:
+        default: DB Engine
+      JDKVersion:
+        default: JDK Version
+      OSType:
+        default: OS Type
 Resources:
   # networking configurations
   WSO2ISVPC:
@@ -190,6 +197,8 @@ Resources:
       BackupRetentionPeriod: '0'
       DBInstanceIdentifier: WSO2ISDBInstance
       DBName: WSO2_IS_DB
+      #EngineVersion: !Select [1, !Split ["_", !ImportValue DBEngine]]
+      #Engine:  !Select [0, !Split ["_", !ImportValue DBEngine]]
       EngineVersion: 5.7.22
       Engine: MySQL
       MasterUsername: !Ref DBUsername
@@ -383,6 +392,11 @@ Resources:
                 - !Ref AWSAccessKeySecret
                 - ^g" /etc/puppet/code/environments/production/modules/is/manifests/params.pp
             - export DB_NAME=WSO2_IS_DB
+            - !Join
+              - ''
+              - - sed -i "s/JDK_TYPE/
+                - !Ref JDKVersion
+                - /g" /etc/puppet/code/environments/production/modules/is/manifests/params.pp
             - !Join
               - ''
               - - export DB_HOSTNAME=
@@ -820,10 +834,30 @@ Parameters:
     Type: String
     MinLength: 4
     AllowedPattern: '[A-Za-z0-9\-]+'
+  DBEngine:
+    Type: String
+    Default: MySQL_5.6
+    AllowedValues:
+      - MySQL_5.7
+      - MySQL_5.6
+      - Oracle
+      - MSSQL
   DBPassword:
     Type: String
     MinLength: 8
     NoEcho: true
+  JDKVersion:
+    Type: String
+    Default: Oracle_JDK_8
+    AllowedValues:
+      - Open_JDK_8
+      - Oracle_JDK_8
+  OSType:
+    Type: String
+    Default: Ubuntu_18.04
+    AllowedValues:
+      - Ubuntu_18.04
+      - CentOS_7
 Mappings:
   WSO2PuppetMasterRegionMap:
     ap-southeast-2:
@@ -844,7 +878,7 @@ Mappings:
     eu-west-1:
       Ubuntu180464bit: ami-00035f41c82244dab
     us-east-1:
-      Ubuntu180464bit: ami-0ac019f4fcb7cb7e6
+      Ubuntu180464bit: ami-0e2dcb722ff3518e6
     us-east-2:
       Ubuntu180464bit: ami-0f65671a86f061fcd
     us-west-1:
