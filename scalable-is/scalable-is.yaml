@@ -801,7 +801,7 @@ Outputs:
         - !GetAtt
           - WSO2ISLoadBalancer
           - DNSName
-        - '/service'
+        - '/services'
     Description: Carbon Server URL
 Parameters:
   AWSAccessKeyId:
