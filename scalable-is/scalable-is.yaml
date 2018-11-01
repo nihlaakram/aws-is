@@ -349,7 +349,8 @@ Resources:
             - sed -i '/\[main\]/a dns_alt_names=puppetmaster,puppet' /etc/puppet/puppet.conf
             - sed -i '/\[master\]/a autosign=true' /etc/puppet/puppet.conf
             - service puppetmaster restart
-            - !Sub "./home/ubuntu/is-init.sh ${WUMUsername} ${WUMPassword}"
+            - !Sub "/home/ubuntu/is-init.sh ${WUMUsername} ${WUMPassword}"
+            - cat /home/ubuntu/.wum3/config.yaml | grep -A1 "uat:"
             - !Join
               - ''
               - - sed -i "s/access-key/
