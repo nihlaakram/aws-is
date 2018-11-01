@@ -790,9 +790,9 @@ Mappings:
     eu-west-1:
       Ubuntu180464bit: ami-0ea3b70805378f796
     us-east-1:
-      Ubuntu180464bit: ami-03614f04d9bec4e8f
+      Ubuntu180464bit: ami-0f4f0cf3943e9c06c
     us-east-2:
-      Ubuntu180464bit: ami-042979e3e34ae16e0
+      Ubuntu180464bit: ami-0a837670f1d364d8a
     us-west-1:
       Ubuntu180464bit: ami-01c303b902735f14b
     us-west-2:
