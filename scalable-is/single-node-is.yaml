@@ -557,107 +557,6 @@ Resources:
     DependsOn:
       - WSO2ISLoadBalancer
       - WSO2ISNode1LaunchConfiguration
-  WSO2ISNode2LaunchConfiguration:
-    Type: 'AWS::AutoScaling::LaunchConfiguration'
-    Properties:
-      ImageId: !FindInMap
-        - WSO2ISAMIRegionMap
-        - !Ref 'AWS::Region'
-        - Ubuntu180464bit
-      InstanceType: !Ref WSO2InstanceType
-      BlockDeviceMappings:
-        - DeviceName: /dev/sda1
-          Ebs:
-            VolumeSize: '20'
-            VolumeType: gp2
-            DeleteOnTermination: 'true'
-      KeyName: !Ref KeyPairName
-      SecurityGroups:
-        - !Ref WSO2ISSecurityGroup
-      UserData: !Base64
-        'Fn::Join':
-          - |+
-
-          - - '#!/bin/bash'
-            - 'export PATH=~/.local/bin:$PATH'
-            - apt-get update
-            - apt-get install -y puppet
-            - apt-get install -y nfs-common
-            - sed -i '/\[main\]/a server=puppet' /etc/puppet/puppet.conf
-            - !Join
-              - ''
-              - - export PuppetmasterIP=
-                - !GetAtt
-                  - PuppetMaster
-                  - PrivateIp
-            - echo "${PuppetmasterIP} puppet puppetmaster" >> /etc/hosts
-            - service puppet restart
-            - mkdir -p /mnt/efs
-            - !Sub "mount -t nfs4 -o nfsvers=4.1 ${WSO2ISEFSFileSystem}.efs.${AWS::Region}.amazonaws.com:/ /mnt/efs"
-            - sleep 200
-            - export FACTER_profile=is
-            - puppet agent -vt
-            - 'if [ ! -d "/mnt/efs/server" ]; then'
-            - '    mkdir -p /mnt/efs/server'
-            - '    cp -r /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/repository/deployment/server /mnt/efs'
-            - fi
-            - >-
-              rm -rf
-              /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/repository/deployment/server
-            - >-
-              ln -s /mnt/efs/server
-              /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/repository/deployment/server
-            - 'if [ ! -d "/mnt/efs/tenants" ]; then'
-            - '    mkdir -p /mnt/efs/tenants'
-            - '    cp -r /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/repository/tenants /mnt/efs'
-            - fi
-            - >-
-              rm -rf
-              /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/repository/tenants
-            - >-
-              ln -s /mnt/efs/tenants
-              /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/repository/tenants
-            - apt-get install -y python3-pip
-            - pip3 install boto3
-            - echo "${WSO2ISEFSFileSystem}:/ /mnt/efs efs defaults,_netdev 0 0" >> /etc/fstab
-            - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2ISInstance2)"
-            - !Join
-              - ''
-              - - sed -i "s/LOCAL-MEMBER-HOST/
-                - $PRIVATE_IP
-                - >-
-                  /g"
-                  /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/repository/conf/axis2/axis2.xml
-            - /usr/lib/wso2/wso2is/5.7.0/wso2is-5.7.0/bin/wso2server.sh start
-            - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
-            - cat /dev/null > ~/.bash_history && history -c
-    DependsOn:
-      - WSO2ISSecurityGroup
-      - WSO2ISLoadBalancer
-      - WSO2ISVPCInternetGatewayAttachment
-      - WSO2ISDBInstance
-      - PuppetMaster
-  WSO2ISNode2AutoScalingGroup:
-    Type: 'AWS::AutoScaling::AutoScalingGroup'
-    Properties:
-      LaunchConfigurationName: !Ref WSO2ISNode2LaunchConfiguration
-      DesiredCapacity: 1
-      MinSize: 1
-      MaxSize: 1
-      LoadBalancerNames:
-        - !Ref WSO2ISLoadBalancer
-      VPCZoneIdentifier:
-        - !Ref WSO2ISPrivateSubnet1
-      Tags:
-        - Key: Name
-          Value: WSO2ISInstance2
-          PropagateAtLaunch: 'true'
-        - Key: cluster
-          Value: is
-          PropagateAtLaunch: 'true'
-    DependsOn:
-      - WSO2ISLoadBalancer
-      - WSO2ISNode2LaunchConfiguration
   WSO2ISLoadBalancerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -891,9 +790,9 @@ Mappings:
     eu-west-1:
       Ubuntu180464bit: ami-0ea3b70805378f796
     us-east-1:
-      Ubuntu180464bit: ami-0cd5f3e1082f46929
+      Ubuntu180464bit: ami-053ac76b77200e86f
     us-east-2:
-      Ubuntu180464bit: ami-0fa30367f91a2c344
+      Ubuntu180464bit: ami-0d0b4ddcec498fbce
     us-west-1:
       Ubuntu180464bit: ami-01c303b902735f14b
     us-west-2:
